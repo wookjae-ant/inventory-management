@@ -4,6 +4,7 @@ export default {
     overview: 'Overview',
     inventory: 'Inventory',
     orders: 'Orders',
+    restocking: 'Restocking',
     finance: 'Finance',
     demandForecast: 'Demand Forecast',
     companyName: 'Catalyst Components',
@@ -106,12 +107,17 @@ export default {
     title: 'Orders',
     description: 'View and manage customer orders',
     allOrders: 'All Orders',
+    submittedOrders: 'Submitted Orders',
+    submittedOrdersEmpty: 'No submitted orders yet. Place a restocking order from the Restocking tab.',
     totalOrders: 'Total Orders',
     totalRevenue: 'Total Revenue',
     avgOrderValue: 'Avg Order Value',
     onTimeDelivery: 'On-Time Delivery',
     itemsCount: '{count} items',
     quantity: 'Qty',
+    leadTime: 'Lead Time',
+    leadTimeDays: '{days} days',
+    createdDate: 'Created',
     table: {
       orderNumber: 'Order Number',
       orderId: 'Order ID',
@@ -125,7 +131,39 @@ export default {
       totalValue: 'Total Value',
       status: 'Status',
       expectedDelivery: 'Expected Delivery',
-      actualDelivery: 'Actual Delivery'
+      actualDelivery: 'Actual Delivery',
+      created: 'Created',
+      leadTime: 'Lead Time'
+    }
+  },
+
+  // Restocking
+  restocking: {
+    title: 'Restocking',
+    description: 'Set a budget and review recommended restocks from the demand forecast.',
+    budgetCardTitle: 'Available Budget',
+    budgetLabel: 'Budget',
+    budgetHint: 'Drag the slider or enter a value. Recommendations update automatically.',
+    recommendationsTitle: 'Recommended Items',
+    allocatedTotal: 'Allocated',
+    remainingBudget: 'Remaining',
+    itemsSelected: 'Items',
+    emptyState: 'No items need restocking for this budget and filters.',
+    overBudget: 'Selection exceeds budget.',
+    placeOrder: 'Place Order',
+    placingOrder: 'Placing order…',
+    orderPlaced: 'Order {orderNumber} placed · expected delivery {expectedDelivery}',
+    placeOrderFailed: 'Failed to place order',
+    remove: 'Remove',
+    table: {
+      sku: 'SKU',
+      item: 'Item',
+      trend: 'Trend',
+      currentStock: 'Current Stock',
+      forecast: 'Forecast',
+      unitCost: 'Unit Cost',
+      quantity: 'Qty',
+      subtotal: 'Subtotal'
     }
   },
 
@@ -204,6 +242,7 @@ export default {
     shipped: 'Shipped',
     processing: 'Processing',
     backordered: 'Backordered',
+    submitted: 'Submitted',
     inStock: 'In Stock',
     lowStock: 'Low Stock',
     adequate: 'Adequate'

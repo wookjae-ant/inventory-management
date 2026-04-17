@@ -4,6 +4,7 @@ export default {
     overview: '概要',
     inventory: '在庫',
     orders: '注文',
+    restocking: '補充',
     finance: '財務',
     demandForecast: '需要予測',
     companyName: '触媒コンポーネンツ',
@@ -106,12 +107,17 @@ export default {
     title: '注文',
     description: '顧客注文の表示と管理',
     allOrders: 'すべての注文',
+    submittedOrders: '提出済み注文',
+    submittedOrdersEmpty: '提出済み注文はまだありません。補充タブから発注してください。',
     totalOrders: '総注文数',
     totalRevenue: '総収益',
     avgOrderValue: '平均注文額',
     onTimeDelivery: '定時配達',
     itemsCount: '{count}件',
     quantity: '数量',
+    leadTime: '納期',
+    leadTimeDays: '{days}日',
+    createdDate: '作成日',
     table: {
       orderNumber: '注文番号',
       orderId: '注文ID',
@@ -125,7 +131,39 @@ export default {
       totalValue: '合計金額',
       status: 'ステータス',
       expectedDelivery: '予定配達日',
-      actualDelivery: '実際の配達日'
+      actualDelivery: '実際の配達日',
+      created: '作成日',
+      leadTime: '納期'
+    }
+  },
+
+  // Restocking
+  restocking: {
+    title: '補充',
+    description: '予算を設定し、需要予測に基づく推奨補充品目を確認します。',
+    budgetCardTitle: '利用可能な予算',
+    budgetLabel: '予算',
+    budgetHint: 'スライダーをドラッグするか値を入力してください。推奨品目は自動で更新されます。',
+    recommendationsTitle: '推奨品目',
+    allocatedTotal: '割当済み',
+    remainingBudget: '残予算',
+    itemsSelected: '品目数',
+    emptyState: 'この予算とフィルターでは補充が必要な品目はありません。',
+    overBudget: '選択額が予算を超えています。',
+    placeOrder: '発注する',
+    placingOrder: '発注中…',
+    orderPlaced: '注文 {orderNumber} を発注しました · 予定配達日 {expectedDelivery}',
+    placeOrderFailed: '発注に失敗しました',
+    remove: '削除',
+    table: {
+      sku: 'SKU',
+      item: '品目',
+      trend: 'トレンド',
+      currentStock: '現在庫',
+      forecast: '予測',
+      unitCost: '単価',
+      quantity: '数量',
+      subtotal: '小計'
     }
   },
 
@@ -204,6 +242,7 @@ export default {
     shipped: '出荷済み',
     processing: '処理中',
     backordered: 'バックオーダー',
+    submitted: '提出済み',
     inStock: '在庫あり',
     lowStock: '在庫僅少',
     adequate: '適量'

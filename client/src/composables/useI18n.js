@@ -9,8 +9,15 @@ const translations = {
   ko
 }
 
-// Load saved locale from localStorage, default to 'en'
-const savedLocale = localStorage.getItem('app-locale') || 'en'
+// Load saved locale from localStorage, default to 'ko' for new users.
+// Existing users with a stored preference keep it. Unknown stored values
+// fall back to 'ko' rather than silently using a key that has no dictionary.
+const DEFAULT_LOCALE = 'ko'
+const storedLocale = localStorage.getItem('app-locale')
+const savedLocale =
+  storedLocale && ['en', 'ja', 'ko'].includes(storedLocale)
+    ? storedLocale
+    : DEFAULT_LOCALE
 const currentLocale = ref(savedLocale)
 
 // Currency is automatically set based on locale (en -> USD, ja -> JPY)

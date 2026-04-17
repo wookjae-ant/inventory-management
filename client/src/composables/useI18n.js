@@ -1,10 +1,12 @@
 import { ref, computed } from 'vue'
 import en from '../locales/en'
 import ja from '../locales/ja'
+import ko from '../locales/ko'
 
 const translations = {
   en,
-  ja
+  ja,
+  ko
 }
 
 // Load saved locale from localStorage, default to 'en'
@@ -69,44 +71,53 @@ export function useI18n() {
   const localeName = computed(() => {
     const names = {
       en: 'English',
-      ja: '日本語'
+      ja: '日本語',
+      ko: '한국어'
     }
     return names[currentLocale.value] || currentLocale.value
   })
 
   // Translate product names
   const translateProductName = (productName) => {
-    if (currentLocale.value === 'ja' && translations.ja.productNames[productName]) {
-      return translations.ja.productNames[productName]
+    const locale = currentLocale.value
+    if ((locale === 'ja' || locale === 'ko') && translations[locale].productNames[productName]) {
+      return translations[locale].productNames[productName]
     }
     return productName
   }
 
   // Translate customer names
   const translateCustomerName = (customerName) => {
-    if (currentLocale.value === 'ja' && translations.ja.customerNames[customerName]) {
-      return translations.ja.customerNames[customerName]
+    const locale = currentLocale.value
+    if ((locale === 'ja' || locale === 'ko') && translations[locale].customerNames[customerName]) {
+      return translations[locale].customerNames[customerName]
     }
     return customerName
   }
 
-  // Translate warehouse names
+  // Translate warehouse names using locale dictionaries to avoid embedding
+  // non-ASCII literals in source (tool limitations with certain encodings).
   const translateWarehouse = (warehouseName) => {
-    if (currentLocale.value === 'ja') {
-      // Handle city names
-      const cityMap = {
-        'San Francisco': 'サンフランシスコ',
-        'London': 'ロンドン',
-        'Tokyo': '東京'
+    const locale = currentLocale.value
+    if (locale === 'ja' || locale === 'ko') {
+      // Map English city names to locale dictionary keys
+      const cityKeyMap = {
+        'San Francisco': 'sanFrancisco',
+        London: 'london',
+        Tokyo: 'tokyo'
+      }
+      const key = cityKeyMap[warehouseName]
+      if (key && translations[locale].warehouses && translations[locale].warehouses[key]) {
+        return translations[locale].warehouses[key]
       }
 
-      if (cityMap[warehouseName]) {
-        return cityMap[warehouseName]
-      }
-
-      // Handle "Warehouse X-##" pattern
+      // Handle "Warehouse X-##" pattern. Match the trailing space so each
+      // locale decides whether to keep a space (ko: "창고 A-12") or collapse
+      // it (ja: "倉庫A-12", preserving the pre-ko-locale behavior).
       if (warehouseName.startsWith('Warehouse ')) {
-        return warehouseName.replace('Warehouse ', '倉庫')
+        const label =
+          locale === 'ja' ? '倉庫' : locale === 'ko' ? '창고 ' : null
+        if (label) return warehouseName.replace('Warehouse ', label)
       }
 
       return warehouseName

@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List, Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from datetime import datetime, timedelta, timezone
 from uuid import uuid4
 from mock_data import inventory_items, orders, demand_forecasts, backlog_items, spending_summary, monthly_spending, category_spending, recent_transactions, purchase_orders
@@ -57,11 +57,14 @@ def apply_filters(items: list, warehouse: Optional[str] = None, category: Option
 
     return filtered
 
-# CORS middleware
+# CORS: explicit origin allowlist only. Wildcard ("*") with allow_credentials=True
+# is rejected by spec-compliant browsers but some stacks silently reflect the
+# Origin header instead, enabling cross-site credential theft. Keep credentials
+# off until real auth exists, and add production origins here when deploying.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
+    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -168,11 +171,12 @@ class SubmittedOrder(BaseModel):
     status: str
 
 class RestockOrderLine(BaseModel):
-    sku: str
-    quantity: int
+    sku: str = Field(min_length=1, max_length=32)
+    # Bounds prevent negative drain and runaway values regardless of client caps.
+    quantity: int = Field(gt=0, le=10_000)
 
 class CreateRestockOrderRequest(BaseModel):
-    items: List[RestockOrderLine]
+    items: List[RestockOrderLine] = Field(min_length=1)
 
 # API endpoints
 @app.get("/")
@@ -445,13 +449,8 @@ def submit_restocking_order(payload: CreateRestockOrderRequest):
     """Create a Submitted Order from the user's chosen line items."""
     global _submitted_order_counter
 
-    if not payload.items:
-        raise HTTPException(status_code=400, detail="items must not be empty")
-
     line_items = []
     for line in payload.items:
-        if line.quantity <= 0:
-            continue
         inventory_row = next((item for item in inventory_items if item['sku'] == line.sku), None)
         if inventory_row is None:
             raise HTTPException(status_code=400, detail=f"Unknown SKU: {line.sku}")
@@ -463,9 +462,6 @@ def submit_restocking_order(payload: CreateRestockOrderRequest):
             'unit_cost': inventory_row['unit_cost'],
             'subtotal': subtotal,
         })
-
-    if not line_items:
-        raise HTTPException(status_code=400, detail="items must contain at least one line with quantity > 0")
 
     _submitted_order_counter += 1
     now = datetime.now(timezone.utc)
